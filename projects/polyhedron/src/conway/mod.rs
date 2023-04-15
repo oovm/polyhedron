@@ -6,6 +6,7 @@ mod iters;
 
 use std::fmt::{Display, Formatter};
 use std::slice::Iter;
+use num_traits::real::Real;
 
 pub enum ConwaySeed {
     Tetrahedron,
@@ -53,52 +54,27 @@ pub struct Polyhedron<T> {
     face_index: Vec<Vec<usize>>,
 }
 
+impl<T: Real> Add<ConwayNotation> for Polyhedron<T> {
+    type Output = Self;
+
+    fn add(mut self, rhs: ConwayNotation) -> Self::Output {
+        self += rhs;
+        self
+    }
+}
 
 
-impl<T: Float> AddAssign<ConwayNotation> for Polyhedron<T> {
+impl<T: Real> AddAssign<ConwayNotation> for Polyhedron<T> {
     fn add_assign(&mut self, rhs: ConwayNotation) {
         match rhs {
             ConwayNotation::Seed(_) => {
                 panic!("Cannot add a seed to a polyhedron.")
             }
             ConwayNotation::Dual => {
-                let mut new_vertices = Vec::new();
-                let mut new_faces = Vec::new();
-                for face in &self.face_index {
-                    let mut new_face = Vec::new();
-                    for vertex in face {
-                        new_face.push(new_vertices.len());
-                        new_vertices.push(self.vertices[*vertex]);
-                    }
-                    new_faces.push(new_face);
-                }
-                for vertex in &self.vertices {
-                    let mut new_vertex = Vec::new();
-                    for face in &self.face_index {
-                        if face.contains(&vertex) {
-                            new_vertex.push(face.len());
-                        }
-                    }
-                    new_faces.push(new_vertex);
-                }
-                self.vertices = new_vertices;
-                self.face_index = new_faces;
+                todo!()
             }
             ConwayNotation::Join => {
-                let mut new_vertices = Vec::new();
-                let mut new_faces = Vec::new();
-                for face in &self.face_index {
-                    let mut new_face = Vec::new();
-                    for vertex in face {
-                        new_face.push(new_vertices.len());
-                        new_vertices.push(self.vertices[*vertex]);
-                    }
-                    new_face.push(new_vertices.len());
-                    new_vertices.push(face.iter().map(|v| self.vertices[*v]).sum::<Point3D<T>>() / T::from_usize(face.len()).unwrap());
-                    new_faces.push(new_face);
-                }
-                self.vertices = new_vertices;
-                self.face_index = new_faces;
+                todo!()
             }
             ConwayNotation::Ambo => {
                 todo!()

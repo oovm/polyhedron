@@ -1,3 +1,6 @@
+#![feature(generators)]
+#![feature(iter_from_generator)]
+
 mod errors;
 mod conway;
 
