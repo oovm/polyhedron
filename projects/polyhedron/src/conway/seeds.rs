@@ -1,5 +1,20 @@
 use super::*;
 
+
+impl ConwaySeed {
+    /// 获取康威基本多面体的名称
+    pub fn as_chinese(&self) -> String {
+        let name = match self {
+            ConwaySeed::Tetrahedron => "正四面体",
+            ConwaySeed::Cube => "正六面体",
+            ConwaySeed::Octahedron => "正八面体",
+            ConwaySeed::Dodecahedron => "正十二面体",
+            ConwaySeed::Icosahedron => "正二十面体",
+        };
+        name.to_string()
+    }
+}
+
 impl ConwaySeed {
     pub fn as_polyhedron<T: Float>(&self) -> Polyhedron<T> {
         match self {
@@ -119,6 +134,11 @@ impl ConwaySeed {
                     vec![10, 19, 11, 17, 7],
                     vec![13, 1, 15, 4, 16],
                 ];
+                Polyhedron {
+                    name: "Dodecahedron".to_string(),
+                    vertices,
+                    faces,
+                }
             }
             ConwaySeed::Icosahedron => {
                 let phi = (T::one() + T::sqrt(T::from(5).unwrap())) / T::from(2).unwrap();

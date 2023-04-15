@@ -1,6 +1,10 @@
 use std::ops::{Add, AddAssign};
 use shape_core::{Float, Point3D, Polygon};
+
 mod seeds;
+
+use std::fmt::{Display, Formatter};
+use std::slice::Iter;
 
 pub enum ConwaySeed {
     Tetrahedron,
@@ -42,11 +46,43 @@ pub enum ConwayNotation {
 }
 
 
-
 pub struct Polyhedron<T> {
     name: String,
     vertices: Vec<Point3D<T>>,
     faces: Vec<Vec<usize>>,
+}
+
+pub struct PolyhedronPoints<'i, T> {
+    vertices: Iter<'i, Point3D<T>>
+}
+pub struct PolyhedronFaces<'i, T> {
+    vertices: &'i [Point3D<T>],
+    faces: Iter<'i, Vec<usize>>
+}
+
+pub struct PolyhedronEdges<'i, T> {
+    vertices: &'i [Point3D<T>],
+    faces: Iter<'i, Vec<usize>>
+}
+
+impl <T> Polyhedron<T> {
+    pub fn vertices(&self) -> PolyhedronPoints<T> {
+        PolyhedronPoints {
+            vertices: self.vertices.iter()
+        }
+    }
+    pub fn faces(&self) -> PolyhedronFaces<T> {
+        PolyhedronFaces {
+            vertices: &self.vertices,
+            faces: self.faces.iter()
+        }
+    }
+    pub fn edges(&self) -> PolyhedronEdges<T> {
+        PolyhedronEdges {
+            vertices: &self.vertices,
+            faces: self.faces.iter()
+        }
+    }
 }
 
 
@@ -79,21 +115,64 @@ impl<T: Float> AddAssign<ConwayNotation> for Polyhedron<T> {
                 self.vertices = new_vertices;
                 self.faces = new_faces;
             }
-            ConwayNotation::Join => {}
-            ConwayNotation::Ambo => {}
-            ConwayNotation::Kis(_) => {}
-            ConwayNotation::Needle => {}
-            ConwayNotation::Zip => {}
-            ConwayNotation::Truncate(_) => {}
-            ConwayNotation::Ortho(_) => {}
-            ConwayNotation::Extend(_) => {}
-            ConwayNotation::Chamfer => {}
-            ConwayNotation::Subdivide => {}
-            ConwayNotation::Gyro(_) => {}
-            ConwayNotation::Snub => {}
-            ConwayNotation::Propeller => {}
-            ConwayNotation::Meta => {}
-            ConwayNotation::Bevel(_) => {}
+            ConwayNotation::Join => {
+                let mut new_vertices = Vec::new();
+                let mut new_faces = Vec::new();
+                for face in &self.faces {
+                    let mut new_face = Vec::new();
+                    for vertex in face {
+                        new_face.push(new_vertices.len());
+                        new_vertices.push(self.vertices[*vertex]);
+                    }
+                    new_face.push(new_vertices.len());
+                    new_vertices.push(face.iter().map(|v| self.vertices[*v]).sum::<Point3D<T>>() / T::from_usize(face.len()).unwrap());
+                    new_faces.push(new_face);
+                }
+                self.vertices = new_vertices;
+                self.faces = new_faces;
+            }
+            ConwayNotation::Ambo => {
+                todo!()
+            }
+            ConwayNotation::Kis(k) => {
+                todo!()
+            }
+            ConwayNotation::Needle => {
+                todo!()
+            }
+            ConwayNotation::Zip => {
+                todo!()
+            }
+            ConwayNotation::Truncate(_) => {
+                todo!()
+            }
+            ConwayNotation::Ortho(_) => {
+                todo!()
+            }
+            ConwayNotation::Extend(_) => {
+                todo!()
+            }
+            ConwayNotation::Chamfer => {
+                todo!()
+            }
+            ConwayNotation::Subdivide => {
+                todo!()
+            }
+            ConwayNotation::Gyro(_) => {
+                todo!()
+            }
+            ConwayNotation::Snub => {
+                todo!()
+            }
+            ConwayNotation::Propeller => {
+                todo!()
+            }
+            ConwayNotation::Meta => {
+                todo!()
+            }
+            ConwayNotation::Bevel(_) => {
+                todo!()
+            }
         }
     }
 }
