@@ -2,6 +2,7 @@ use std::ops::{Add, AddAssign};
 use shape_core::{Float, Point3D, Polygon};
 
 mod seeds;
+mod iters;
 
 use std::fmt::{Display, Formatter};
 use std::slice::Iter;
@@ -49,41 +50,9 @@ pub enum ConwayNotation {
 pub struct Polyhedron<T> {
     name: String,
     vertices: Vec<Point3D<T>>,
-    faces: Vec<Vec<usize>>,
+    face_index: Vec<Vec<usize>>,
 }
 
-pub struct PolyhedronPoints<'i, T> {
-    vertices: Iter<'i, Point3D<T>>
-}
-pub struct PolyhedronFaces<'i, T> {
-    vertices: &'i [Point3D<T>],
-    faces: Iter<'i, Vec<usize>>
-}
-
-pub struct PolyhedronEdges<'i, T> {
-    vertices: &'i [Point3D<T>],
-    faces: Iter<'i, Vec<usize>>
-}
-
-impl <T> Polyhedron<T> {
-    pub fn vertices(&self) -> PolyhedronPoints<T> {
-        PolyhedronPoints {
-            vertices: self.vertices.iter()
-        }
-    }
-    pub fn faces(&self) -> PolyhedronFaces<T> {
-        PolyhedronFaces {
-            vertices: &self.vertices,
-            faces: self.faces.iter()
-        }
-    }
-    pub fn edges(&self) -> PolyhedronEdges<T> {
-        PolyhedronEdges {
-            vertices: &self.vertices,
-            faces: self.faces.iter()
-        }
-    }
-}
 
 
 impl<T: Float> AddAssign<ConwayNotation> for Polyhedron<T> {
@@ -95,7 +64,7 @@ impl<T: Float> AddAssign<ConwayNotation> for Polyhedron<T> {
             ConwayNotation::Dual => {
                 let mut new_vertices = Vec::new();
                 let mut new_faces = Vec::new();
-                for face in &self.faces {
+                for face in &self.face_index {
                     let mut new_face = Vec::new();
                     for vertex in face {
                         new_face.push(new_vertices.len());
@@ -105,7 +74,7 @@ impl<T: Float> AddAssign<ConwayNotation> for Polyhedron<T> {
                 }
                 for vertex in &self.vertices {
                     let mut new_vertex = Vec::new();
-                    for face in &self.faces {
+                    for face in &self.face_index {
                         if face.contains(&vertex) {
                             new_vertex.push(face.len());
                         }
@@ -113,12 +82,12 @@ impl<T: Float> AddAssign<ConwayNotation> for Polyhedron<T> {
                     new_faces.push(new_vertex);
                 }
                 self.vertices = new_vertices;
-                self.faces = new_faces;
+                self.face_index = new_faces;
             }
             ConwayNotation::Join => {
                 let mut new_vertices = Vec::new();
                 let mut new_faces = Vec::new();
-                for face in &self.faces {
+                for face in &self.face_index {
                     let mut new_face = Vec::new();
                     for vertex in face {
                         new_face.push(new_vertices.len());
@@ -129,7 +98,7 @@ impl<T: Float> AddAssign<ConwayNotation> for Polyhedron<T> {
                     new_faces.push(new_face);
                 }
                 self.vertices = new_vertices;
-                self.faces = new_faces;
+                self.face_index = new_faces;
             }
             ConwayNotation::Ambo => {
                 todo!()

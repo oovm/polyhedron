@@ -10,6 +10,7 @@ license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
+#rayon = "1.7.0"
 num-traits = "0.2.15"
 shape-core = "0.1.6"
 itertools = "0.10.5"

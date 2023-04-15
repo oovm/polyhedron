@@ -34,7 +34,7 @@ impl ConwaySeed {
                 Polyhedron {
                     name: "Tetrahedron".to_string(),
                     vertices,
-                    faces,
+                    face_index: faces,
                 }
             }
             ConwaySeed::Cube => {
@@ -59,7 +59,7 @@ impl ConwaySeed {
                 Polyhedron {
                     name: "Cube".to_string(),
                     vertices,
-                    faces,
+                    face_index: faces,
                 }
             }
             ConwaySeed::Octahedron => {
@@ -84,7 +84,7 @@ impl ConwaySeed {
                 Polyhedron {
                     name: "Octahedron".to_string(),
                     vertices,
-                    faces,
+                    face_index: faces,
                 }
             }
             ConwaySeed::Dodecahedron => {
@@ -137,7 +137,7 @@ impl ConwaySeed {
                 Polyhedron {
                     name: "Dodecahedron".to_string(),
                     vertices,
-                    faces,
+                    face_index: faces,
                 }
             }
             ConwaySeed::Icosahedron => {
@@ -181,7 +181,7 @@ impl ConwaySeed {
                 Polyhedron {
                     name: "Icosahedron".to_string(),
                     vertices,
-                    faces,
+                    face_index: faces,
                 }
             }
         }
