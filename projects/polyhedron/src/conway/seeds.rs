@@ -1,6 +1,5 @@
 use super::*;
 
-
 impl ConwaySeed {
     /// 获取康威基本多面体的名称
     pub fn as_chinese(&self) -> String {
@@ -16,7 +15,7 @@ impl ConwaySeed {
 }
 
 impl ConwaySeed {
-    pub fn as_polyhedron<T: Float>(&self) -> Polyhedron<T> {
+    pub fn as_polyhedron<T: Real>(&self) -> Polyhedron<T> {
         match self {
             ConwaySeed::Tetrahedron => {
                 let vertices = vec![
@@ -25,17 +24,8 @@ impl ConwaySeed {
                     Point3D::new(T::one(), T::zero(), T::zero()),
                     Point3D::new(T::zero(), T::zero(), -T::one()),
                 ];
-                let faces = vec![
-                    vec![0, 1, 2],
-                    vec![0, 2, 3],
-                    vec![0, 3, 1],
-                    vec![1, 3, 2],
-                ];
-                Polyhedron {
-                    name: "Tetrahedron".to_string(),
-                    vertices,
-                    face_index: faces,
-                }
+                let faces = vec![vec![0, 1, 2], vec![0, 2, 3], vec![0, 3, 1], vec![1, 3, 2]];
+                Polyhedron { name: "Tetrahedron".to_string(), vertices, face_index: faces }
             }
             ConwaySeed::Cube => {
                 let vertices = vec![
@@ -56,11 +46,7 @@ impl ConwaySeed {
                     vec![2, 3, 7, 6],
                     vec![4, 6, 7, 5],
                 ];
-                Polyhedron {
-                    name: "Cube".to_string(),
-                    vertices,
-                    face_index: faces,
-                }
+                Polyhedron { name: "Cube".to_string(), vertices, face_index: faces }
             }
             ConwaySeed::Octahedron => {
                 let vertices = vec![
@@ -81,11 +67,7 @@ impl ConwaySeed {
                     vec![5, 4, 3],
                     vec![5, 1, 4],
                 ];
-                Polyhedron {
-                    name: "Octahedron".to_string(),
-                    vertices,
-                    face_index: faces,
-                }
+                Polyhedron { name: "Octahedron".to_string(), vertices, face_index: faces }
             }
             ConwaySeed::Dodecahedron => {
                 let phi = (T::one() + T::sqrt(T::from(5).unwrap())) / T::from(2).unwrap();
@@ -134,11 +116,7 @@ impl ConwaySeed {
                     vec![10, 19, 11, 17, 7],
                     vec![13, 1, 15, 4, 16],
                 ];
-                Polyhedron {
-                    name: "Dodecahedron".to_string(),
-                    vertices,
-                    face_index: faces,
-                }
+                Polyhedron { name: "Dodecahedron".to_string(), vertices, face_index: faces }
             }
             ConwaySeed::Icosahedron => {
                 let phi = (T::one() + T::sqrt(T::from(5).unwrap())) / T::from(2).unwrap();
@@ -178,11 +156,7 @@ impl ConwaySeed {
                     vec![10, 5, 7],
                     vec![11, 7, 5],
                 ];
-                Polyhedron {
-                    name: "Icosahedron".to_string(),
-                    vertices,
-                    face_index: faces,
-                }
+                Polyhedron { name: "Icosahedron".to_string(), vertices, face_index: faces }
             }
         }
     }

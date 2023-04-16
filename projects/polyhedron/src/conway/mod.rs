@@ -1,13 +1,18 @@
-use std::ops::{Add, AddAssign};
 use shape_core::{Float, Point3D, Polygon};
+use std::ops::{Add, AddAssign};
 
-mod seeds;
+mod display;
 mod iters;
+mod seeds;
 
-use std::fmt::{Display, Formatter};
-use std::slice::Iter;
 use num_traits::real::Real;
+use std::{
+    fmt::{Debug, Display, Formatter},
+    mem::swap,
+    slice::Iter,
+};
 
+#[derive(Copy, Clone, Debug)]
 pub enum ConwaySeed {
     Tetrahedron,
     Cube,
@@ -16,10 +21,9 @@ pub enum ConwaySeed {
     Icosahedron,
 }
 
+#[derive(Copy, Clone, Debug)]
 pub enum ConwayNotation {
     // ============= [E = 1]
-    /// Seed is the initial polyhedron.
-    Seed(ConwaySeed),
     /// Dual replaces each face with a vertex, and each vertex with a face.
     Dual,
     // ============= [E = 2]
@@ -47,6 +51,24 @@ pub enum ConwayNotation {
     Bevel(usize),
 }
 
+pub struct ConwayPolyhedron {
+    base: ConwaySeed,
+    operations: Vec<ConwayNotation>,
+}
+
+impl ConwayPolyhedron {
+    pub fn as_polyhedron<T>(&self) -> Polyhedron<T>
+    where
+        T: Real,
+    {
+        let mut polyhedron = self.base.as_polyhedron();
+        for operation in self.operations.iter() {
+            polyhedron += *operation;
+        }
+        polyhedron.name = self.to_string();
+        polyhedron
+    }
+}
 
 pub struct Polyhedron<T> {
     name: String,
@@ -63,15 +85,27 @@ impl<T: Real> Add<ConwayNotation> for Polyhedron<T> {
     }
 }
 
-
 impl<T: Real> AddAssign<ConwayNotation> for Polyhedron<T> {
     fn add_assign(&mut self, rhs: ConwayNotation) {
         match rhs {
-            ConwayNotation::Seed(_) => {
-                panic!("Cannot add a seed to a polyhedron.")
-            }
+            // All faces are rotated, so no need to change labels.
             ConwayNotation::Dual => {
-                todo!()
+                let mut new_vertices = Vec::new();
+                let mut new_face_index = Vec::new();
+                let mut index = 0;
+                for face in self.faces() {
+                    let face_center = face.center();
+                    new_vertices.push(face_center);
+                    let mut face_index = Vec::new();
+                    for vertex in face.vertices() {
+                        new_vertices.push(*vertex);
+                        face_index.push(index);
+                        index += 1;
+                    }
+                    new_face_index.push(face_index);
+                }
+                self.vertices = new_vertices;
+                self.face_index = new_face_index;
             }
             ConwayNotation::Join => {
                 todo!()

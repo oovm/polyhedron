@@ -1,22 +1,21 @@
-use std::collections::BTreeSet;
-use std::iter::from_generator;
+use super::*;
 use itertools::Itertools;
 use num_traits::real::Real;
-use shape_core::{Line, Line3D};
-use super::*;
+use shape_core::{Line, Line3D, Polygon3D};
+use std::{collections::BTreeSet, iter::from_generator};
 
 impl<T: Real> Polyhedron<T> {
-    pub fn vertices(&self) -> impl Iterator<Item=Point3D<T>> + '_ {
+    pub fn vertices(&self) -> impl Iterator<Item = Point3D<T>> + '_ {
         self.vertices.iter().map(|p| *p)
     }
-    // pub fn faces(&self) -> impl Iterator<Item=Polygon3D<T>> + '_ {
-    //     from_generator(move || {
-    //         for face in &self.face_index {
-    //             yield face.iter().map(|s| unsafe { self.vertices.get_unchecked(*s).as_ref() })
-    //         }
-    //     })
-    // }
-    pub fn edges(&self) -> impl Iterator<Item=Line3D<T>> + '_ {
+    pub fn faces(&self) -> impl Iterator<Item = Polygon3D<T>> + '_ {
+        from_generator(move || {
+            for face in &self.face_index {
+                yield Polygon3D { vertex: face.iter().map(|s| unsafe { *self.vertices.get_unchecked(*s) }).collect() }
+            }
+        })
+    }
+    pub fn edges(&self) -> impl Iterator<Item = Line3D<T>> + '_ {
         let mut unique = BTreeSet::new();
         from_generator(move || {
             for face in &self.face_index {
@@ -24,17 +23,10 @@ impl<T: Real> Polyhedron<T> {
                     // Ensure that the edge is in the correct order.
                     if s.le(e) {
                         match unique.get(&(*s, *e)) {
-                            Some(_) => {
-                                continue;
-                            }
+                            Some(_) => continue,
                             None => {
                                 unique.insert((*s, *e));
-                                yield unsafe {
-                                    Line3D {
-                                        start: *self.vertices.get_unchecked(*s),
-                                        end: *self.vertices.get_unchecked(*e),
-                                    }
-                                }
+                                yield unsafe { Line3D::new(*self.vertices.get_unchecked(*s), *self.vertices.get_unchecked(*e)) }
                             }
                         }
                     }
